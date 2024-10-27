@@ -4,7 +4,7 @@ Projek Membangun Web Server sebagai syarat kelulusan kelas Dicoding-Belajar Jari
 
 ## Kriteria
 
-Kriteria 1: Menyiapkan Web Server
+1. Kriteria 1: Menyiapkan Web Server
 Langkah pertama yang perlu dilakukan dalam membangun web server adalah melakukan persiapan terlebih dahulu. Persiapan ini mencakup beberapa hal berikut ini.
 
 Melakukan cloning dari repositori GitHub yang sudah disediakan
