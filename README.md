@@ -1,6 +1,11 @@
 # Wer Server
 
-Projek Membangun Web Server sebagai syarat kelulusan kelas Dicoding-Belajar Jaringan Komputer untuk Pemula- 
+Projek Membangun Web Server sebagai syarat kelulusan kelas Dicoding -Belajar Jaringan Komputer untuk Pemula- 
+Semua file hasil konfigurasi dapat diakses pada : <br>
+[Konfigurasi NGINX](https://github.com/Muhmdwild/dicoding-webserver/blob/main/default)<br>
+[Konfigurasi Apache2](000-default.conf)<br>
+[Konfigurasi Port Apache](ports.conf)<br>
+[app.js](app.js)<br>
 
 ## Kriteria
 
@@ -17,16 +22,45 @@ Setelah kriteria 1 berhasil Anda kerjakan, lanjutlah menyelesaikan kriteria 2. D
 Usai menyelesaikan kriteria 2, lanjutkan pengerjaan proyek akhir Anda dengan mengerjakan kriteria 3. Kriteria ini meminta Anda untuk mengonfigurasikan NGINX (alias reverse proxy server) untuk menerapkan limit access atau rate limit guna meningkatkan keamanan pada web server. 
 
 
-## Langkah Penyelesaian
+## Analisis Konfigurasi
 
-Langkah-langkah untuk menginstal proyek ini secara lokal :
+Berikut ini adalah analisis konfigurasi web server sesuai dengan kriteria di atas :
 
 ```bash
-# Clone repository ini
-git clone https://github.com/username/nama-proyek.git
+# Dalam konfigurasi file pada direktory /etc/nginx/sites-available/default
+# Reverse Proxy
+location / {
+		proxy_pass http://localhost:8000;
+		proxy_http_version 1.1;
+		proxy_set_header Upgrade $http_upgrade;
+		proxy_set_header Connection 'upgrade';
+		proxy_set_header Host $host;
+		proxy_cache_bypass $http_upgrade;
+		
+		limit_req zone=one;
+		# First attempt to serve request as file, then
+		# as directory, then fall back to displaying a 404.
+		# try_files $uri $uri/ =404;
+	}
 
-# Masuk ke direktori proyek
-cd nama-proyek
+```
+Baris ini mengarahkan semua permintaan yang cocok dengan blok location ini ke http://localhost:8000. Artinya, Nginx berfungsi sebagai reverse proxy yang meneruskan permintaan ke server aplikasi yang berjalan di port 8000 pada localhost.
 
-# Instal dependencies
-npm install
+```bash
+# Dalam konfigurasi file pada direktory /etc/nginx/sites-available/default
+# Menerapkan Limit Access di NGINX
+
+limit_req_zone $binary_remote_addr zone=one:10m rate=6r/m;
+```
+Baris ini menjelaskan request yang dapat dilakukan adalah 6 request per menit atau 1 request setiap 10 detik.
+
+```bash
+# Dalam konfigurasi file pada direktory /etc/nginx/sites-available/default
+# Merubah Port dari 80 menjadi 8000
+
+server {
+	listen 3000 default_server;
+	listen [::]:3000 default_server;
+```
+
+Baris tersebut Digunakan untuk merubah port yang akan digunakan oleh Nginx.
